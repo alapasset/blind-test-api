@@ -4,12 +4,15 @@
 const express = require('express');
 const user = require('./user.queries') 
 const spotify = require('./spotify.queries') 
+const cors = require('cors');
 
 // set the port of our application
 // process.env.PORT lets the port be set by Heroku
 const port = process.env.PORT || 8080;
 
 const app = express();
+
+app.use(cors());
 
 app.get('/', (request, response) => {
   response.json({ info: 'Node.js, Express, and Postgres API' })
