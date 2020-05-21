@@ -43,9 +43,7 @@ app.get('/callback', function(req, res) {
       redirect_uri: REDIRECT_URI,
       grant_type: 'authorization_code'
     },
-    headers: {
-      'Authorization': 'Basic ' + (new Buffer(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'))
-    },
+    headers: { Authorization: `Basic ${new Buffer(CLIENT_ID + ':' + CLIENT_SECRET)}`.toString('base64') },
     json: true
   };
 
@@ -64,15 +62,11 @@ app.get('/callback', function(req, res) {
 app.get('/user-info', function(req, res) {
 	var options = {
 	url: 'https://api.spotify.com/v1/me',
-	headers: { 'Authorization': 'Bearer ' + ACCES_TOKEN },
+  headers: { Authorization: `Bearer ${ACCES_TOKEN}` },
 	json: true
 	};
 
 	request.get(options, function(error, response, body) {
-      console.log('GET USER INFOS ');
-      console.log('=========================');
-      console.log(body);
-      console.log('=========================');
       res.send(body);
   });
 
@@ -82,19 +76,27 @@ app.get('/playlists', function(req, res) {
   // Options of the GET request : (LIMIT=50 here)
   var options = {
     url: 'https://api.spotify.com/v1/me/playlists?limit=50',
+    headers: { Authorization: `Bearer ${ACCES_TOKEN}` },
+    json: true
+  };
+
+  request.get(options, function(error, response, body) {
+    res.send(body);
+  });
+});
+
+app.get('/playlist/:id', function(req, res) {
+  var options = {
+    url: `https://api.spotify.com/v1/playlists/${req.params.id}`,
     headers: { 'Authorization': 'Bearer ' + ACCES_TOKEN },
     json: true
   };
 
   request.get(options, function(error, response, body) {
-    console.log('GET ALL PLAYLISTS FROM USER ' + USER_ID);
-    console.log('=========================');
-    console.log(body);
-    console.log('=========================');
     res.send(body);
   });
 });
 
 app.listen(port, function() {
-  console.log('Our app is running on http://localhost:' + port);
+  console.log(`Our app is running on http://localhost: ${port}`);
 });
