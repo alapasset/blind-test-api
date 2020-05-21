@@ -21,11 +21,11 @@ app.get('/user-info', spotify.getUserInfos);
 app.get('/playlists', spotify.getAllPlaylistsFromUser);
 app.get('/playlist/:id', spotify.getPlaylist);
 
-app.get('/users', user.getUsers)
-app.get('/users/:id', user.getUserById)
-app.post('/users', user.createUser)
-app.put('/users/:id', user.updateUser)
-app.delete('/users/:id', user.deleteUser)
+app.get('/users', user.get)
+app.get('/users/:id', user.getById)
+app.post('/users', user.create)
+app.put('/users/:id', user.update)
+app.delete('/users/:id', user.unactivate)
 
 app.listen(port, function() {
   console.log(`Our app is running on http://localhost: ${port}`);

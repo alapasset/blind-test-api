@@ -8,7 +8,7 @@ const pool = new Pool({
     port: 5432,
 })
 
-const getUsers = (request, response) => {
+const get = (request, response) => {
   pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
     if (error) {
       throw error
@@ -17,7 +17,7 @@ const getUsers = (request, response) => {
   })
 }
 
-const getUserById = (request, response) => {
+const getById = (request, response) => {
   const id = parseInt(request.params.id)
 
   pool.query('SELECT * FROM users WHERE id = $1', [id], (error, results) => {
@@ -28,7 +28,7 @@ const getUserById = (request, response) => {
   })
 }
 
-const createUser = (request, response) => {
+const create = (request, response) => {
   const { name, email } = request.body
 
   pool.query('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email], (error, results) => {
@@ -39,7 +39,7 @@ const createUser = (request, response) => {
   })
 }
 
-const updateUser = (request, response) => {
+const update = (request, response) => {
   const id = parseInt(request.params.id)
   const { name, email } = request.body
 
@@ -55,21 +55,21 @@ const updateUser = (request, response) => {
   )
 }
 
-const deleteUser = (request, response) => {
+const unactivate = (request, response) => {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM users WHERE id = $1', [id], (error, results) => {
+  pool.query('UPDATE users SET activate = 0 WHERE id = $1', [id], (error, results) => {
     if (error) {
       throw error
     }
-    response.status(200).send(`User deleted with ID: ${id}`)
+    response.status(200).send(`User with ID: ${id} is unactivate`)
   })
 }
 
 module.exports = {
-  getUsers,
-  getUserById,
-  createUser,
-  updateUser,
-  deleteUser,
+  get,
+  getById,
+  create,
+  update,
+  unactivate,
 }
