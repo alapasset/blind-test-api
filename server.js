@@ -5,19 +5,21 @@ var express = require('express');
 var querystring = require('querystring');
 var request = require('request');
 
+// set the port of our application
+// process.env.PORT lets the port be set by Heroku
+var port = process.env.PORT || 8080;
+
+//SPOTIFY variables
 var CLIENT_ID = 'f80117db049c42f18beba3911fe96479';
 var CLIENT_SECRET = 'ca7218fdaed34ba3b7217837cce1bcb1'; // APP Spotify BlindTest Secret API Key
-var REDIRECT_URI = 'http://localhost:8888/callback'; // Redirect uri, once login is completed
-
+var REDIRECT_URI = 'https://blinder-test-api.herokuapp.com/callback'; // Redirect uri, once login is completed
 var ACCES_TOKEN = '';
 var REFRESH_TOKEN = '';
 var USER_ID = '';
 
 var app = express();
 
-app.use(express.static(__dirname + '/public'));
-
-app.get('/login', function(req, res) {
+app.get('/', function(req, res) {
   var scope = 'user-read-private user-read-email playlist-read-private playlist-read-collaborative';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
@@ -51,8 +53,7 @@ app.get('/callback', function(req, res) {
     if (!error && response.statusCode === 200) {
       ACCES_TOKEN = body.access_token;
       REFRESH_TOKEN = body.refresh_token;
-      console.log("Successfully Logged!")
-      console.log(body)
+      res.redirect('/user-info');
     } else {
       res.redirect( '/#' + querystring.stringify({error: 'invalid_token'}) );
     }
@@ -94,5 +95,6 @@ app.get('/playlists', function(req, res) {
   });
 });
 
-console.log('Listening on 8888');
-app.listen(8888);
+app.listen(port, function() {
+  console.log('Our app is running on http://localhost:' + port);
+});
