@@ -28,25 +28,17 @@ class Controller {
   }
 
   public async getSpotifyPlaylistInformations(req: Request, res: Response) {
-    // const spotifyService = new SpotifyService()
-    // res.json(await spotifyService.getPlaylistTracksInformations(req.params.playlistId))
+    const spotifyService = SpotifyService.getInstance()
+    const infos = await spotifyService.getPlaylistTracksInformations(req.params.playlistId)
+    if (infos) {
+      res.json(infos)
+    } else {
+      res.redirect('/spotify/authUrl')
+    }
   }
 
   public addPlaylist(req: Request, res: Response) {
-    // connection.then(async connection => {
-    //   const spotifyService = new SpotifyService()
-    //   let playlistToAdd = await spotifyService.getPlaylistInformations(req.body.playlistId)
-    //   let playlist = new Playlist()
-    //   playlist.id = playlistToAdd.body.id
-    //   playlist.name = playlistToAdd.body.name
-    //   playlist.tracks = await Track.updateTracks(playlistToAdd.body.tracks.items, connection)
-    //   await connection.manager.save(playlist)
-    //   res.json({message: "Successfully Saved."})
-    // })
-    // .catch(error => {
-    //   console.error("Error ", error)
-    //   res.json(error);
-    // })
+    // TODO
   }
 
   public updatePlaylist(req: Request, res: Response) {
@@ -88,7 +80,12 @@ class Controller {
 
   public async spotifyMe(req: Request, res: Response) {
     const spotifyService = SpotifyService.getInstance()
-    res.json(await spotifyService.getMyInformations())
+    const infos = await spotifyService.getMyInformations()
+    if (infos) {
+      res.json(infos)
+    } else {
+      res.redirect('/spotify/authUrl')
+    }
   }
 }
 
