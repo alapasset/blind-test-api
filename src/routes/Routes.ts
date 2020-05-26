@@ -1,5 +1,4 @@
-import { Request, Response } from "express"
-import express from "express"
+import express, { Request, Response } from "express"
 import { Controller } from "../controller/Controller"
 
 class Routes {
@@ -16,21 +15,9 @@ class Routes {
         response.status(200).send({ message: "GET request successfully." })
       })
 
-    app.route('/spotify/callback')
-      .get(this.controller.spotifyCallback)
-
-    app.route('/spotify/authUrl')
-      .get(this.controller.spotifyAuthUrl)
-
-    app.route('/spotify/me')
-      .get(this.controller.spotifyMe)
-
-    app.route('/spotify/playlist/:playlistId')
-      .get(this.controller.getSpotifyPlaylistInformations)
-
     app.route('/playlist')
       .get(this.controller.getAllPlaylist)
-      .post(this.controller.addPlaylist)
+      .post(this.controller.createPlaylist)
 
     app.route('/playlist/:playlistId')
       .get(this.controller.getPlaylistById)
@@ -38,4 +25,5 @@ class Routes {
   }
 }
 
-export {Routes}
+export { Routes }
+

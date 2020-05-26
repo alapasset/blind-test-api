@@ -1,12 +1,10 @@
 import { Request, Response } from 'express'
 import { connection } from "../connection/Connection"
-import { SpotifyService } from "../service/spotify"
 import Playlist from "../entity/Playlist"
 import Track from '../entity/Track'
 
-class Controller {
 
-  constructor() {}
+class Controller {
 
   public getAllPlaylist(req: Request, res: Response) {
     connection.then(async connection => {
@@ -27,18 +25,30 @@ class Controller {
     })
   }
 
-  public async getSpotifyPlaylistInformations(req: Request, res: Response) {
-    const spotifyService = SpotifyService.getInstance()
-    const infos = await spotifyService.getPlaylistTracksInformations(req.params.playlistId)
-    if (infos) {
-      res.json(infos)
-    } else {
-      res.redirect('/spotify/authUrl')
-    }
+  public getPlaylistById(req: Request, res: Response) {
+    connection
+      .then(async connection => {
+        let playlist = await connection.manager.findOne(Playlist, req.params.playlistId)
+        res.json(playlist)
+      })
+      .catch(error => {
+        console.error("Error ", error)
+        res.json(error)
+      })
   }
 
-  public addPlaylist(req: Request, res: Response) {
-    // TODO
+  public createPlaylist(req: Request, res: Response) {
+    connection.then(async connection => {
+      let playlist = new Playlist()
+      playlist.id = req.body.id
+      playlist.name = req.body.name
+      playlist.tracks = await Track.createTracks(req.body.tracks.items, connection)
+      res.json(await connection.manager.save(playlist))
+    })
+    .catch(error => {
+      console.error("Error ", error)
+      res.json(error);
+    })
   }
 
   public updatePlaylist(req: Request, res: Response) {
@@ -55,38 +65,7 @@ class Controller {
         res.json(error)
       })
   }
-
-  public getPlaylistById(req: Request, res: Response) {
-    connection
-      .then(async connection => {
-        let playlist = await connection.manager.findOne(Playlist, req.params.playlistId)
-        res.json(playlist)
-      })
-      .catch(error => {
-        console.error("Error ", error)
-        res.json(error)
-      })
-  }
-
-  public async spotifyCallback(req: Request, res: Response) {
-    const spotifyService = SpotifyService.getInstance()
-    await spotifyService.setCode(req.query.code.toString())
-    res.redirect('/spotify/me')
-  }
-
-  public spotifyAuthUrl(req: Request, res: Response) {
-    res.redirect(SpotifyService.getAuthUrl())
-  }
-
-  public async spotifyMe(req: Request, res: Response) {
-    const spotifyService = SpotifyService.getInstance()
-    const infos = await spotifyService.getMyInformations()
-    if (infos) {
-      res.json(infos)
-    } else {
-      res.redirect('/spotify/authUrl')
-    }
-  }
 }
 
-export {Controller}
+export { Controller }
+

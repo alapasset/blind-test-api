@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn, Connection } from "typeorm"
+import { Column, Connection, Entity, PrimaryColumn } from "typeorm"
 
 @Entity()
 export class Artist {
@@ -11,17 +11,24 @@ export class Artist {
   @Column()
   public url: string
 
-  static async updateArtists(artists: [], connection: Connection): Promise<Artist[]> {
-    let artistsRes : Artist[] = []
-    artists.forEach(async (artistToAdd: any) => {
-      let artist = new Artist()
-      artist.id = artistToAdd.id
-      artist.name = artistToAdd.name
-      artist.url = artistToAdd.external_urls.spotify
-      await connection.manager.save(artist)
-      artistsRes.push(artist)
+  static async createArtists(artists: [], connection: Connection): Promise<Artist[]> {
+    return new Promise(async (resolve, reject) => {
+      let artistsRes : Artist[] = []
+      artists.forEach(async (artistToAdd: any) => {
+        try {
+          let artist = new Artist()
+          artist.id = artistToAdd.id
+          artist.name = artistToAdd.name
+          artist.url = artistToAdd.external_urls.spotify
+          await connection.manager.save(artist)
+          artistsRes.push(artist)
+        } catch (e) {
+          console.log(e)
+          reject()
+        }
+      })
+      resolve(artistsRes)
     })
-    return artistsRes
   }
 }
 
