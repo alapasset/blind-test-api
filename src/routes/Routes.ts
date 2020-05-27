@@ -1,12 +1,15 @@
 import express, { Request, Response } from "express"
-import { Controller } from "../controller/Controller"
+import { PlaylistController } from "../controller/playlist"
+import { SalonController } from "../controller/salon"
 
 class Routes {
 
-  private controller: Controller
+  private playlistController: PlaylistController
+  private salonController: SalonController
 
   constructor() {
-    this.controller = new Controller()
+    this.salonController = new SalonController()
+    this.playlistController = new PlaylistController()
   }
 
   public routes(app: express.Application): void {
@@ -16,12 +19,26 @@ class Routes {
       })
 
     app.route('/playlist')
-      .get(this.controller.getAllPlaylist)
-      .post(this.controller.createPlaylist)
+      .get(this.playlistController.getAllPlaylist)
+      .post(this.playlistController.createPlaylist)
 
     app.route('/playlist/:playlistId')
-      .get(this.controller.getPlaylistById)
-      .put(this.controller.updatePlaylist)
+      .get(this.playlistController.getPlaylistById)
+      .put(this.playlistController.updatePlaylist)
+
+      app.route('/playlist/:playlistId/tracks')
+      .get(this.playlistController.getTracksByPlaylistById)
+
+    app.route('/salon')
+      .get(this.salonController.getAllSalon)
+      .post(this.salonController.createSalon)
+
+    app.route('/salon/:salonId')
+      .get(this.salonController.getSalonById)
+      .put(this.salonController.updateSalon)
+
+    app.route('/salon/:salonId/playlist')
+      .get(this.salonController.getPlaylistBySalonId)
   }
 }
 

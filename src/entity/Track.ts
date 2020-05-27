@@ -11,7 +11,7 @@ export class Track {
   public title: string
 
   @Column()
-  public preview_url: string
+  public preview: string
 
   @Column()
   public url: string
@@ -23,8 +23,8 @@ export class Track {
   @JoinTable()
   artists: Artist[]
 
-  @ManyToMany(type => Playlist, playlist => playlist.id)
-  playlist: Playlist[]
+  @ManyToMany(() => Playlist, (Playlist) => Playlist.tracks)
+  playlists: Playlist[]
 
   static async createTracks(tracks: any[], connection: Connection): Promise<Track[]> {
     return new Promise(async (resolve, reject) => {
@@ -36,7 +36,7 @@ export class Track {
             track.id = item.track.id
             track.title = item.track.name
             track.image = item.track.album.images[1].url
-            track.preview_url = item.track.preview_url
+            track.preview = item.track.preview_url
             track.url = item.track.external_urls.spotify
             track.artists = await Artist.createArtists(item.track.album.artists, connection)
             await connection.manager.save(track)

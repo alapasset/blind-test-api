@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn, UpdateDateColumn, JoinTable, ManyToMany } from "typeorm"
+import { Column, Entity, JoinTable, ManyToMany, PrimaryColumn, UpdateDateColumn } from "typeorm"
 import Track from "./Track"
 
 @Entity()
@@ -10,9 +10,9 @@ export class Playlist {
   public name: string
 
   @UpdateDateColumn()
-  public last_update: Date
+  public lastUpdate: Date
 
-  @ManyToMany(type => Track, track => track.id)
+  @ManyToMany(() => Track, (track) => track.playlists)
   @JoinTable()
   tracks: Track[]
 }

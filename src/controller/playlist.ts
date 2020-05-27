@@ -4,18 +4,12 @@ import Playlist from "../entity/Playlist"
 import Track from '../entity/Track'
 
 
-class Controller {
+class PlaylistController {
 
   public getAllPlaylist(req: Request, res: Response) {
     connection.then(async connection => {
-      const playlists: Playlist[] = await connection.manager.find(Playlist, {
-        join: {
-          alias: "playlist",
-          leftJoinAndSelect: {
-            track: "playlist.tracks",
-            artist: "track.artists"
-          }
-        }
+      const playlists: Playlist[] = await connection.manager.find(Playlist,{
+        select: ["id", "name"]
       })
       res.json(playlists)
     })
@@ -28,8 +22,31 @@ class Controller {
   public getPlaylistById(req: Request, res: Response) {
     connection
       .then(async connection => {
-        let playlist = await connection.manager.findOne(Playlist, req.params.playlistId)
+        let playlist = await connection.manager.findOne(Playlist, { id: req.params.playlistId }, {
+          join: {
+            alias: "playlist",
+            leftJoinAndSelect: {
+              track: "playlist.tracks",
+              artist: "track.artists"
+            }
+          }
+        })
         res.json(playlist)
+      })
+      .catch(error => {
+        console.error("Error ", error)
+        res.json(error)
+      })
+  }
+
+  public getTracksByPlaylistById(req: Request, res: Response) {
+    connection
+      .then(async connection => {
+        let tracks =  await connection.manager.getRepository(Track).createQueryBuilder('track')
+        .innerJoinAndSelect('track.artists', 'artists')
+        .leftJoin('track.playlists', 'playlists')
+        .where('playlists.id = :id', { id: req.params.playlistId }).getMany()
+        res.json(tracks)
       })
       .catch(error => {
         console.error("Error ", error)
@@ -67,5 +84,5 @@ class Controller {
   }
 }
 
-export { Controller }
+export { PlaylistController }
 
